@@ -1,6 +1,7 @@
 package com.kremlevmax.RestfulWebService.User;
 
 import java.net.URI;
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,13 @@ public class UserController {
 	}
 	
 	@GetMapping("/users/{id}")
-	private User getOneUser(@PathVariable int id) {
-		return userDaoService.getUserById(id);
+	private User getOneUser(@PathVariable int id) throws UserNotFoundException {
+		User requestedUser = userDaoService.getUserById(id);
+		
+		if (requestedUser == null)
+			throw new UserNotFoundException("User with id "+ id + " was not found");
+	
+		return requestedUser;
 	}
 	
 	@PostMapping("/users")
