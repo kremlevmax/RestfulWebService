@@ -1,4 +1,4 @@
-package com.kremlevmax.RestfulWebService.User;
+package com.kremlevmax.RestfulWebService.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
