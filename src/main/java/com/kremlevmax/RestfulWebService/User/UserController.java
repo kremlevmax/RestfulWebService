@@ -14,6 +14,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.kremlevmax.RestfulWebService.Exception.UserNotFoundException;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 public class UserController {
@@ -42,7 +44,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/users")
-	private ResponseEntity<User> addUser(@RequestBody User user) {
+	private ResponseEntity<User> addUser(@Valid @RequestBody User user) {
 		User savedUser = userDaoService.addUser(user);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}")

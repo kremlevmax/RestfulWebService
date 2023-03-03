@@ -1,9 +1,13 @@
 package com.kremlevmax.RestfulWebService.Exception;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -25,5 +29,19 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getMessage(), request.getDescription(false));
 		
 		return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);		
+	}
+	
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(
+			MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		
+		String message = "Total Validation Errors: " + ex.getErrorCount()+ " - "+ ex.getFieldErrors().stream()
+			      .map(n -> String.valueOf(n.getDefaultMessage()))
+			      .collect(Collectors.joining("; "));
+		
+		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), 
+				message, request.getDescription(false));
+
+		return new ResponseEntity<Object>(errorDetails, HttpStatus.NOT_FOUND);		
 	}
 }
