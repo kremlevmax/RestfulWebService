@@ -2,7 +2,10 @@ package com.kremlevmax.RestfulWebService.User;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,21 +23,23 @@ import jakarta.validation.Valid;
 @RestController
 public class UserController {
 	
-	UserDaoService userDaoService;
+	private MessageSource messageSource;
+	private UserDaoService userDaoService;
 
 
-	public UserController(UserDaoService userDaoService) {
+	public UserController(UserDaoService userDaoService, MessageSource messageSource) {
 		super();
 		this.userDaoService = userDaoService;
+		this.messageSource = messageSource;
 	}
 	
 	@GetMapping("/users")
-	private List<User> getAllUsers() {
+	public List<User> getAllUsers() {
 		return userDaoService.getAllUsers();
 	}
 	
 	@GetMapping("/users/{id}")
-	private User getOneUser(@PathVariable int id) throws UserNotFoundException {
+	public User getOneUser(@PathVariable int id) throws UserNotFoundException {
 		User requestedUser = userDaoService.getUserById(id);
 		
 		if (requestedUser == null)
@@ -43,8 +48,14 @@ public class UserController {
 		return requestedUser;
 	}
 	
+	@GetMapping("/i18n")
+	public String getI18n() {
+		Locale locale = LocaleContextHolder.getLocale();
+		return messageSource.getMessage("good.morning.message", null, "Default Message", locale);
+	}
+	
 	@PostMapping("/users")
-	private ResponseEntity<User> addUser(@Valid @RequestBody User user) {
+	public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
 		User savedUser = userDaoService.addUser(user);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}")
